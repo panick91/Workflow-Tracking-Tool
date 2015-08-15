@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace WTT;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;

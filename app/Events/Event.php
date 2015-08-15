@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace WTT\Events;
 
 abstract class Event
 {

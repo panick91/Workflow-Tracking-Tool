@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace WTT\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

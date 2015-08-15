@@ -1,5 +1,5 @@
 suites:
     main:
-        namespace: App
-        psr4_prefix: App
+        namespace: WTT
+        psr4_prefix: WTT
         src_path: app
