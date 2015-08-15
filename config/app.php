@@ -140,10 +140,14 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        WTT\Providers\AppServiceProvider::class,
+        WTT\Providers\EventServiceProvider::class,
+        WTT\Providers\RouteServiceProvider::class,
 
+        /*
+         * Database provider
+         */
+        yajra\Oci8\Oci8ServiceProvider::class
     ],
 
     /*
