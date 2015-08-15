@@ -1,0 +1,3 @@
+[submodule "public/test"]
+	path = public/test
+	url = https://github.com/angular/angular-seed.git
