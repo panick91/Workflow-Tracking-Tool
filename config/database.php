@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'oracle'),
 
     /*
     |--------------------------------------------------------------------------
@@ -48,11 +48,11 @@ return [
 
         'oracle' => array(
             'driver' => 'oracle',
-            'host' => env(DB_HOST, 'localhost'),
+            'host' => env('DB_HOST', 'localhost'),
             'port' => '1521',
-            'database' => env(DB_DATABASE, 'WTT'),
-            'username' => env(DB_USERNAME, 'admin'),
-            'password' => env(DB_PASSWORD, 'admin'),
+            'database' => env('DB_DATABASE', 'WTT'),
+            'username' => env('DB_USERNAME', 'admin'),
+            'password' => env('DB_PASSWORD', 'admin'),
             'charset' => 'AL32UTF8',
             'prefix' => '',
         ),
