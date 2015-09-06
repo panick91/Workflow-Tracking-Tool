@@ -1,15 +1,14 @@
 <?php
 
-namespace WTT\Http\Controllers;
+namespace WTT\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
 
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
 use WTT\Repositories\Eloquent\TbIsRequestRepository;
-use WTT\TBISREQUEST;
 
-class TbIsRequestController extends Controller
+class OrdersController extends Controller
 {
     /**
      * @var TbIsRequestRepository
@@ -20,7 +19,6 @@ class TbIsRequestController extends Controller
     {
         $this->tbIsRequestRepository = $tbIsRequestRepository;
     }
-
 
     /**
      * Display a listing of the resource.
@@ -37,12 +35,12 @@ class TbIsRequestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
     {
-        return $id;
+        return 'Orders Show';
     }
 
 }

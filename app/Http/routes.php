@@ -21,11 +21,22 @@ Route::group(array('prefix' => 'api'), function () {
     // API version 1.0
     Route::group(array('prefix' => '1.0'), function ()
     {
-        // since we will be using this just for CRUD, we won't need create and edit
-        // Angular will handle both of those forms
-        // this ensures that a user can't access api/create or api/edit when there's nothing there
         Route::resource('requests', 'TbIsRequestController',
             array('only' => array('index')));
 
+        Route::resource('orders', 'Orders\OrdersController',
+            array('only' => array('index','show')));
+
+        Route::resource('orders.timeline', 'Orders\TimelineController',
+            array('only' => array('index')));
+
+        Route::resource('orders.progress', 'Orders\ProgressController',
+            array('only' => array('index')));
+
+        Route::resource('orders.history', 'Orders\HistoryController',
+            array('only' => array('index')));
+
+        Route::resource('projectstatus', 'ProjectStatusController',
+            array('only' => array('index')));
     });
 });
