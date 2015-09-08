@@ -8,8 +8,8 @@
 
 namespace WTT\Repositories\Eloquent;
 
-use Bosnadev\Repositories\Contracts\CriteriaInterface;
-use Bosnadev\Repositories\Criteria\Criteria;
+use WTT\Repositories\Contracts\CriteriaInterface;
+use WTT\Repositories\Criteria\Criteria;
 use WTT\Repositories\Contracts\RepositoryInterface;
 use WTT\Exceptions\RepositoryException;
 
