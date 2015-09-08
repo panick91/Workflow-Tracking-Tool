@@ -6,18 +6,18 @@ use Illuminate\Http\Request;
 
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
-use WTT\Repositories\Eloquent\TbIsRequestRepository;
+use WTT\Repositories\Eloquent\EISRequestRepository;
 
 class OrdersController extends Controller
 {
     /**
-     * @var TbIsRequestRepository
+     * @var EISRequestRepository
      */
-    private $tbIsRequestRepository;
+    private $EISRequestRepository;
 
-    public function __construct(TbIsRequestRepository $tbIsRequestRepository)
+    public function __construct(EISRequestRepository $EISRequestRepository)
     {
-        $this->tbIsRequestRepository = $tbIsRequestRepository;
+        $this->EISRequestRepository = $EISRequestRepository;
     }
 
     /**
@@ -27,7 +27,7 @@ class OrdersController extends Controller
      */
     public function index()
     {
-        $requests = $this->tbIsRequestRepository->paginate(15);
+        $requests = $this->EISRequestRepository->getOrders(10);
         return $requests;
     }
 
@@ -40,7 +40,10 @@ class OrdersController extends Controller
      */
     public function show($id)
     {
-        return 'Orders Show';
+//        $var = ;
+        return $this->EISRequestRepository->getSADDate($id);
+//        return EISRequestInfo::find($id)->ehi_SunCla;
+//        return EHI_SunCla::find($id)->eisRequestInfo;
     }
 
 }

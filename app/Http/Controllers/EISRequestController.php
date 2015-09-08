@@ -6,19 +6,19 @@ use Illuminate\Http\Request;
 
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
-use WTT\Repositories\Eloquent\TbIsRequestRepository;
-use WTT\TBISREQUEST;
+use WTT\Repositories\Eloquent\EISRequestRepository;
+use WTT\EISRequest;
 
-class TbIsRequestController extends Controller
+class EISRequestController extends Controller
 {
     /**
-     * @var TbIsRequestRepository
+     * @var EISRequestRepository
      */
-    private $tbIsRequestRepository;
+    private $EISRequestRepository;
 
-    public function __construct(TbIsRequestRepository $tbIsRequestRepository)
+    public function __construct(EISRequestRepository $EISRequestRepository)
     {
-        $this->tbIsRequestRepository = $tbIsRequestRepository;
+        $this->EISRequestRepository = $EISRequestRepository;
     }
 
 
@@ -29,7 +29,7 @@ class TbIsRequestController extends Controller
      */
     public function index()
     {
-        $requests = $this->tbIsRequestRepository->paginate(15);
+        $requests = $this->EISRequestRepository->paginate(15);
         return $requests;
     }
 
@@ -42,7 +42,7 @@ class TbIsRequestController extends Controller
      */
     public function show($id)
     {
-        return $id;
+        return $this->EISRequestRepository->getSADDate($id);
     }
 
 }
