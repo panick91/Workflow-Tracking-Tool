@@ -25,6 +25,7 @@ class EISRequest extends Eloquent
         , 'eisRequestInfos'
         , 'eisRequestContacts'
         , 'taskExecution'
+        , 'projects'
     ];
 
     public function eisRequestInfos()
@@ -40,6 +41,11 @@ class EISRequest extends Eloquent
     public function eisRequestContacts()
     {
         return $this->hasMany('WTT\EISRequestContact', 'eisrequest_id');
+    }
+
+    public function projects()
+    {
+        return $this->hasMany('WTT\Project', 'eisrequest_id');
     }
 
     public function taskExecution()

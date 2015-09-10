@@ -35,10 +35,14 @@ class EISRequestRepository extends Repository
 
     public function getOrders($pageSize){
         $orders =  $this->model->with(
-            'eisRequestInfos.ehi_SunCla'
-            ,'taskExecution'
-            ,'eisRequestContacts'
-        )->orderBy('id')->paginate($pageSize);
+//            'eisRequestInfos.ehi_SunCla'
+//            ,'taskExecution'
+//            ,'eisRequestContacts'
+            'projects.network.networkNodes.milestoneTemplate'
+//            ,'network'
+//            ,'networkNodes'
+//            ,'milestoneTemplate'
+        )->orderBy('create_dt','desc')->paginate($pageSize);
 //        $orders = $orders->load('eisRequestInfo.ehi_SunCla');
 //        $orders = $orders->load('sadDate');
         return $orders;
