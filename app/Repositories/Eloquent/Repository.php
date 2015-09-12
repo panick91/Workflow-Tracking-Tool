@@ -42,7 +42,6 @@ abstract class Repository implements RepositoryInterface, CriteriaInterface
     /**
      * @param App $app
      * @param Collection $collection
-     * @throws \Bosnadev\Repositories\Exceptions\RepositoryException
      */
     public function __construct(App $app, Collection $collection) {
         $this->app = $app;

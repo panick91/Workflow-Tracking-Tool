@@ -8,7 +8,8 @@
 
 namespace WTT\Repositories\Eloquent;
 
-
+use \StdClass;
+use Illuminate\Support\Facades\DB;
 
 class EISRequestRepository extends Repository
 {
@@ -22,7 +23,8 @@ class EISRequestRepository extends Repository
         return 'WTT\EISRequest';
     }
 
-    public function getSADDate($id) {
+    public function getSADDate($id)
+    {
 //        $this->applyCriteria();
 //        $eisRequest = $this->find($id);
 //        $eisRequest = $eisRequest->eisRequestInfo;
@@ -33,18 +35,29 @@ class EISRequestRepository extends Repository
         return $order;
     }
 
-    public function getOrders($pageSize){
-        $orders =  $this->model->with(
+    public function getOrders($page,$pageSize)
+    {
+
+        DB::enableQueryLog();
+
+        $data = new StdClass;
+        $data->orders = $this->model->with(
 //            'eisRequestInfos.ehi_SunCla'
 //            ,'taskExecution'
-//            ,'eisRequestContacts'
-            'projects.network.networkNodes.milestoneTemplate'
-//            ,'network'
-//            ,'networkNodes'
-//            ,'milestoneTemplate'
-        )->orderBy('create_dt','desc')->paginate($pageSize);
-//        $orders = $orders->load('eisRequestInfo.ehi_SunCla');
-//        $orders = $orders->load('sadDate');
-        return $orders;
+            'eisRequestContacts'
+            ,'projects.network.networkNodes.milestoneTemplate'
+//            , 'eisRequestActivities'
+//            , 'projects.projectActivites'
+//            , 'projects.tasks.taskACtivites'
+        )
+            ->orderBy('create_dt', 'desc')
+            ->skip($pageSize * ($page - 1))
+            ->take($pageSize)->get();
+
+        $data->count = $this->model->count();
+
+//        print_r(DB::getQueryLog());
+
+        return $data;
     }
 }

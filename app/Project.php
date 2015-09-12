@@ -16,6 +16,16 @@ class Project extends Eloquent
 
     protected $table = 'MLOGPROD.TBPROJECT';
 
+    public function tasks()
+    {
+        return $this->hasMany('WTT\Task', 'project_id');
+    }
+
+    public function projectActivites()
+    {
+        return $this->hasMany('WTT\ProjectActivity', 'project_id');
+    }
+
     public function eisRequest()
     {
         return $this->belongsTo('WTT\EISRequest', 'eisrequest_id');

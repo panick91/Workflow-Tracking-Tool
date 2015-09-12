@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
 use WTT\Repositories\Eloquent\EISRequestRepository;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrdersController extends Controller
 {
@@ -27,8 +29,15 @@ class OrdersController extends Controller
      */
     public function index()
     {
-        $requests = $this->EISRequestRepository->getOrders(10);
-        return $requests;
+        $ordersData = $this->EISRequestRepository->getOrders(Paginator::resolveCurrentPage(),10);
+
+        $paginator = new LengthAwarePaginator($ordersData->orders,
+            $ordersData->count,
+            10,
+            Paginator::resolveCurrentPage(),
+            ['path' => Paginator::resolveCurrentPath()]);
+
+        return $paginator;
     }
 
 
@@ -40,10 +49,7 @@ class OrdersController extends Controller
      */
     public function show($id)
     {
-//        $var = ;
         return $this->EISRequestRepository->getSADDate($id);
-//        return EISRequestInfo::find($id)->ehi_SunCla;
-//        return EHI_SunCla::find($id)->eisRequestInfo;
     }
 
 }
