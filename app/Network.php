@@ -25,4 +25,9 @@ class Network extends Eloquent
     {
         return $this->hasMany('WTT\NetworkNode', 'network_id');
     }
+
+    public function milestones()
+    {
+        return $this->hasMany('WTT\NetworkNode', 'network_id')->where('milestone','1');
+    }
 }

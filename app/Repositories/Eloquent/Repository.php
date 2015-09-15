@@ -11,19 +11,12 @@ namespace WTT\Repositories\Eloquent;
 use WTT\Repositories\Contracts\CriteriaInterface;
 use WTT\Repositories\Criteria\Criteria;
 use WTT\Repositories\Contracts\RepositoryInterface;
-use WTT\Exceptions\RepositoryException;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Container\Container as App;
 
 abstract class Repository implements RepositoryInterface, CriteriaInterface
 {
-    /**
-     * @var App
-     */
-    private $app;
-
     /**
      * @var
      */
@@ -40,22 +33,14 @@ abstract class Repository implements RepositoryInterface, CriteriaInterface
     protected $skipCriteria = false;
 
     /**
-     * @param App $app
-     * @param Collection $collection
+     * @param Model $model
+     * @internal param App $app
+     * @internal param Collection $criterias
+     * @internal param Collection $collection
      */
-    public function __construct(App $app, Collection $collection) {
-        $this->app = $app;
-        $this->criteria = $collection;
-        $this->resetScope();
-        $this->makeModel();
+    public function __construct(Model $model) {
+        $this->model = $model;
     }
-
-    /**
-     * Specify Model class name
-     *
-     * @return mixed
-     */
-    public abstract function model();
 
     /**
      * @param array $columns
@@ -121,19 +106,6 @@ abstract class Repository implements RepositoryInterface, CriteriaInterface
     public function findBy($attribute, $value, $columns = array('*')) {
         $this->applyCriteria();
         return $this->model->where($attribute, '=', $value)->first($columns);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder
-     * @throws RepositoryException
-     */
-    public function makeModel() {
-        $model = $this->app->make($this->model());
-
-        if (!$model instanceof Model)
-            throw new RepositoryException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
-
-        return $this->model = $model;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace WTT;
 
+use Carbon\Carbon;
 use yajra\Oci8\Eloquent\OracleEloquent as Eloquent;
 
 class EISRequest extends Eloquent
@@ -11,7 +12,7 @@ class EISRequest extends Eloquent
     protected $visible = [
         'id'
         , 'eisrequesttype_id'
-        , 'external_id'
+//        , 'external_id'
         , 'external_id2'
         , 'sourcesystem'
         , 'region_id'
@@ -21,23 +22,22 @@ class EISRequest extends Eloquent
         , 'customer_id'
         , 'start_dt'
         , 'end_dt'
-        , 'sadDates'
-        , 'eisRequestInfos'
-        , 'eisRequestContacts'
+//        , 'eisRequestContacts'
         , 'taskExecution'
-        , 'projects'
+//        , 'projects'
         , 'tasks'
         , 'eisRequestActivities'
+        , 'sadDate'
+        , 'currentWorkflowState'
+    ];
+
+    protected $appends = [
+        'sadDate'
     ];
 
     public function eisRequestInfos()
     {
         return $this->hasMany('WTT\EISRequestInfo', 'eisrequest_id');
-    }
-
-    public function sadDates()
-    {
-        return $this->hasManyThrough('WTT\EHI_SunCla', 'WTT\EISRequestInfo', 'eisrequest_id', 'id')->select('deliverydt');
     }
 
     public function eisRequestContacts()
@@ -65,4 +65,14 @@ class EISRequest extends Eloquent
         return $this->belongsTo('WTT\TaskExecution', 'executionlocation_id');
     }
 
+
+    public function getSADDateAttribute()
+    {
+        return $this->attributes['sadDate'];
+    }
+
+    public function setSADDateAttribute($value)
+    {
+        $this->attributes['sadDate'] = Carbon::parse($value);
+    }
 }
