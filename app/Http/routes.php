@@ -21,9 +21,6 @@ Route::group(array('prefix' => 'api'), function () {
     // API version 1.0
     Route::group(array('prefix' => '1.0'), function ()
     {
-        Route::resource('requests', 'EIsRequestController',
-            array('only' => array('index')));
-
         Route::resource('orders', 'Orders\OrdersController',
             array('only' => array('index','show')));
 

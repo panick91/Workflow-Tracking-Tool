@@ -11,7 +11,7 @@ class EISRequest extends Eloquent
 
     protected $visible = [
         'id'
-        , 'eisrequesttype_id'
+        , 'eisRequestType'
 //        , 'external_id'
         , 'external_id2'
         , 'sourcesystem'
@@ -24,7 +24,7 @@ class EISRequest extends Eloquent
         , 'end_dt'
 //        , 'eisRequestContacts'
         , 'taskExecution'
-//        , 'projects'
+        , 'projects'
         , 'tasks'
         , 'eisRequestActivities'
         , 'sadDate'
@@ -48,6 +48,10 @@ class EISRequest extends Eloquent
     public function eisRequestActivities()
     {
         return $this->hasMany('WTT\EISRequestActivity', 'eisrequest_id');
+    }
+
+    public function eisRequestType(){
+        return $this->belongsTo('WTT\EISRequestType','eisrequesttype_id');
     }
 
     public function projects()

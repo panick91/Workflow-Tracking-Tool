@@ -40,6 +40,7 @@ abstract class Repository implements RepositoryInterface, CriteriaInterface
      */
     public function __construct(Model $model) {
         $this->model = $model;
+        $this->criteria = new Collection();
     }
 
     /**

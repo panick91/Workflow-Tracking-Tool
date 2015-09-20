@@ -10,6 +10,8 @@ namespace WTT\Services;
 
 use WTT\Enumerations\WorkflowState;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
+use WTT\Repositories\Criteria\CustomerCriteria;
+use WTT\Repositories\Criteria\ServiceIdCriteria;
 
 class OrdersService
 {
@@ -29,7 +31,7 @@ class OrdersService
     {
         $order = $this->ordersRepository->getOrder($external_id2);
 
-        if($order != null) {
+        if ($order != null) {
             $order->sadDate = $this->getSADDate($order);
             $order->currentWorkflowState = $this->currentWorkflowState($order);
         }
@@ -46,6 +48,7 @@ class OrdersService
      */
     public function getOrders($page, $pageSize)
     {
+
         $data = $this->ordersRepository->getOrders($page, $pageSize);
 
         foreach ($data->orders as $order) {
@@ -54,6 +57,26 @@ class OrdersService
         }
 
         return $data;
+    }
+
+    public function getOrdersFiltered($page, $pageSize, $serviceId, $customerName, $siteId, $gvNumber, $status)
+    {
+        $this->addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status);
+
+        $data = $this->ordersRepository->getOrders($page, $pageSize);
+
+        foreach ($data->orders as $order) {
+            $order->sadDate = $this->getSADDate($order);
+            $order->currentWorkflowState = $this->currentWorkflowState($order);
+        }
+
+        return $data;
+    }
+
+    private function addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status)
+    {
+        if ($serviceId != null) $this->ordersRepository->pushCriteria(new ServiceIdCriteria($serviceId));
+        if ($customerName != null) $this->ordersRepository->pushCriteria(new CustomerCriteria($customerName));
     }
 
     private function getSADDate($model)

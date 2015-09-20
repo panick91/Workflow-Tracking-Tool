@@ -25,11 +25,16 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
     public function getOrder($external_id2)
     {
         $query = $this->model->with(array(
+//            'projects' => function ($query) {
+//                $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
+//                $query->with('network.milestones.milestoneTemplate');
+//            },
+            'taskExecution',
+            'eisRequestType',
             'projects' => function ($query) {
                 $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
                 $query->with('network.milestones.milestoneTemplate');
             },
-            'taskExecution'
         ));
 
         $query->where('external_id2', 'like', $external_id2);
@@ -43,45 +48,38 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
 
     public function getOrders($page, $pageSize)
     {
-        if (env('APP_DEBUG') && env('DB_DEBUG')) {
-            DB::enableQueryLog();
-        }
+//        DB::enableQueryLog();
 
         $data = new StdClass;
-        $query = $this->model->with(array(
+        $this->model = $this->model->with(array(
             'projects' => function ($query) {
                 $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
                 $query->with('network.milestones.milestoneTemplate');
             },
             'taskExecution'
-//              , 'eisRequestActivities'
-//            , 'projects.projectActivites'
-//            , 'projects.tasks.taskACtivites'
         ));
 
-        $this->filterRequestTypes($query);
+        $this->filterRequestTypes();
+        $this->applyCriteria();
 
-        $query->orderBy('create_dt', 'desc');
+        $this->model->orderBy('create_dt', 'desc');
 
         // Pagination
-        $query->skip($pageSize * ($page - 1));
-        $query->take($pageSize);
+        $this->model->skip($pageSize * ($page - 1));
+        $this->model->take($pageSize);
 
 
-        $data->orders = $query->get();
-
+        $data->orders = $this->model->get();
         $data->count = $this->model->count();
 
-        if (env('APP_DEBUG') && env('DB_DEBUG')) {
-            print_r(DB::getQueryLog());
-        }
+//        print_r(DB::getQueryLog());
 
         return $data;
     }
 
-    private function filterRequestTypes(Builder $query)
+    private function filterRequestTypes()
     {
-        $query->where(function ($query) {
+        $this->model->where(function ($query) {
             $i = 0;
             foreach ($this->requestTypes as $requestType) {
                 if ($i == 0) $query->where('external_id2', 'like', $requestType . '%');
