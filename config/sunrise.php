@@ -17,5 +17,12 @@ return [
         'ATTRIBUTE_REMOVED',
         'NOTICE',
         'REPORT'
+    ],
+
+    'requestTypes' => [
+        'SIPVPN'
+        , 'SID'
+        , 'SBV'
+        , 'IIPA'
     ]
 ];

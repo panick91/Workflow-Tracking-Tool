@@ -8,8 +8,10 @@
 
 namespace WTT\Services;
 
+use Illuminate\Support\Facades\Config;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 use WTT\Repositories\Criteria\CustomerCriteria;
+use WTT\Repositories\Criteria\RequestTypeCriteria;
 use WTT\Repositories\Criteria\ServiceIdCriteria;
 
 class OrdersService
@@ -66,7 +68,6 @@ class OrdersService
      */
     public function getOrders($page, $pageSize)
     {
-
         $data = $this->ordersRepository->getOrders($page, $pageSize);
 
         foreach ($data->orders as $order) {
@@ -117,6 +118,10 @@ class OrdersService
     {
         if ($serviceId != null) $this->ordersRepository->pushCriteria(new ServiceIdCriteria($serviceId));
         if ($customerName != null) $this->ordersRepository->pushCriteria(new CustomerCriteria($customerName));
+
+        $this->ordersRepository->pushCriteria(
+            new RequestTypeCriteria(Config::get('sunrise.requestTypes'))
+        );
     }
 
     private function getSADDate($model)

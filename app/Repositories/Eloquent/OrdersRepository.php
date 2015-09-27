@@ -14,13 +14,6 @@ use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 
 class OrdersRepository extends Repository implements OrdersRepositoryInterface
 {
-    private $requestTypes = array(
-        'SIPVPN'
-    , 'SID'
-    , 'SBV'
-    , 'IIPA'
-    );
-
     public function getOrder($external_id2, array $relations = array())
     {
         $query = $this->model->with($relations);
@@ -45,7 +38,6 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
             'taskExecution'
         ));
 
-        $this->filterRequestTypes();
         $this->applyCriteria();
 
         $this->model->orderBy('create_dt', 'desc');
@@ -59,17 +51,5 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
         $data->count = $this->model->count();
 
         return $data;
-    }
-
-    private function filterRequestTypes()
-    {
-        $this->model->where(function ($query) {
-            $i = 0;
-            foreach ($this->requestTypes as $requestType) {
-                if ($i == 0) $query->where('external_id2', 'like', $requestType . '%');
-                else $query->orWhere('external_id2', 'like', $requestType . '%');
-                $i++;
-            }
-        });
     }
 }
