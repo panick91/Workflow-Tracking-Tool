@@ -38,7 +38,6 @@ class WorkflowState implements JsonSerializable
     function jsonSerialize()
     {
         $states = array();
-        $states[WorkflowState::NoData] = 'No data';
         $states[WorkflowState::PlanningPhase] = 'Planning phase';
         $states[WorkflowState::StartOrder] = 'Start order';
         $states[WorkflowState::EquipmentInstallation] = 'Equipment installation';

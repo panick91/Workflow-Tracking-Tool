@@ -35,7 +35,8 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
                 $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
                 $query->with('network.milestones.milestoneTemplate');
             },
-            'taskExecution'
+            'taskExecution',
+            'eisRequestInfos'
         ));
 
         $this->applyCriteria();

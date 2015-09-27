@@ -11,24 +11,17 @@ class EISRequest extends Eloquent
 
     protected $visible = [
         'id'
-        , 'eisRequestType'
-//        , 'external_id'
         , 'external_id2'
-        , 'sourcesystem'
-        , 'region_id'
-        , 'businessunit_id'
         , 'name'
         , 'description'
-        , 'customer_id'
         , 'start_dt'
         , 'end_dt'
-//        , 'eisRequestContacts'
-        , 'taskExecution'
-//        , 'projects'
         , 'tasks'
         , 'eisRequestActivities'
         , 'sadDate'
         , 'currentMilestone'
+        , 'availableMilestones'
+        , 'customer'
     ];
 
     protected $appends = [

@@ -9,6 +9,8 @@
 namespace WTT\Services;
 
 use Illuminate\Support\Facades\Config;
+use stdClass;
+use WTT\Enumerations\WorkflowState;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 use WTT\Repositories\Criteria\CustomerCriteria;
 use WTT\Repositories\Criteria\RequestTypeCriteria;
@@ -52,8 +54,7 @@ class OrdersService
                 ));
 
         if ($order != null) {
-            $order->sadDate = $this->getSADDate($order);
-            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
+            $this->setCustomProperties($order);
         }
 
         return $order;
@@ -71,8 +72,7 @@ class OrdersService
         $data = $this->ordersRepository->getOrders($page, $pageSize);
 
         foreach ($data->orders as $order) {
-            $order->sadDate = $this->getSADDate($order);
-            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
+            $this->setCustomProperties($order);
         }
 
         return $data;
@@ -95,14 +95,18 @@ class OrdersService
         $data = $this->ordersRepository->getOrders($page, $pageSize);
 
         foreach ($data->orders as $order) {
-            $order->sadDate = $this->getSADDate($order);
-            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
-
+            $this->setCustomProperties($order);
         }
 
         return $data;
     }
 
+    /**
+     * Returns internal id of an order entity based on the given external_id2.
+     *
+     * @param $external_id2
+     * @return int
+     */
     public function getIdByExternalId2($external_id2)
     {
         $order = $this->ordersRepository->getOrder($external_id2);
@@ -114,6 +118,30 @@ class OrdersService
     #endregion
 
     #region Helper methods
+
+    /**
+     * Enriches the given object with custom properties.
+     *
+     * @param $order
+     */
+    private function setCustomProperties($order)
+    {
+        $order->availableMilestones = new WorkflowState();
+        $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
+        $order->sadDate = $this->getSADDate($order);
+        $order->customer = $this->getCustomerName($order);
+
+    }
+
+    /**
+     * Sets all filters to query the database according to the given input.
+     *
+     * @param $serviceId
+     * @param $customerName
+     * @param $siteId
+     * @param $gvNumber
+     * @param $status
+     */
     private function addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status)
     {
         if ($serviceId != null) $this->ordersRepository->pushCriteria(new ServiceIdCriteria($serviceId));
@@ -124,13 +152,46 @@ class OrdersService
         );
     }
 
-    private function getSADDate($model)
+    /**
+     * Queries the SAD date from the related order entities.
+     *
+     * @param $order
+     * @return stdClass
+     */
+    private function getSADDate($order)
     {
-        $eisRequestInfos = $model->getAttribute('eisRequestInfos');
+        $eisRequestInfos = $order->getAttribute('eisRequestInfos');
         if ($eisRequestInfos !== null) {
             $ehi_SunCla = $eisRequestInfos[0]->getAttribute('ehi_SunCla');
             return $ehi_SunCla === null ? null : $ehi_SunCla->getAttribute('deliverydt');
         } else return null;
+    }
+
+    /**
+     * Queries the customer properties from the related order entities.
+     *
+     * @param $order
+     * @return stdClass
+     */
+    private function getCustomerName($order)
+    {
+        $customer = new StdClass();
+
+        if ($order->eisRequestInfos != null) {
+
+            //in case there are multiple infos
+            $ehiSunCla = $order->eisRequestInfos->first()->ehi_SunCla;
+
+            $customer->name = $ehiSunCla->sitename;
+            $customer->address = $ehiSunCla->custaddress;
+            $customer->address2 = $ehiSunCla->custaddress2;
+            $customer->city = $ehiSunCla->custzip . ' ' . $ehiSunCla->custcity;
+            $customer->state = $ehiSunCla->custstate;
+            $customer->phoneNumber = $ehiSunCla->custphone;
+            $customer->phoneNumber = $ehiSunCla->custphone;
+        }
+
+        return $customer;
     }
     #endregion
 }
