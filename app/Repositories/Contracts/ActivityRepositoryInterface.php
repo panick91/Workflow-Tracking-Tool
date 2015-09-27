@@ -11,5 +11,5 @@ namespace WTT\Repositories\Contracts;
 
 interface ActivityRepositoryInterface extends RepositoryInterface
 {
-    public function getActivities($eisRequestId, $page, $pageSize);
+    public function getActivities($page, $pageSize);
 }

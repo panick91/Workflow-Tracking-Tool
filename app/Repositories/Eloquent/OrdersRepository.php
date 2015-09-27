@@ -14,16 +14,22 @@ use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 
 class OrdersRepository extends Repository implements OrdersRepositoryInterface
 {
-    public function getOrder($external_id2, array $relations = array())
+    public function getOrder()
     {
-        $query = $this->model->with($relations);
+        $this->model = $this->model->with(array(
+            'taskExecution',
+            'eisRequestType',
+            'projects' => function ($query) {
+                $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
+                $query->with('network.milestones.milestoneTemplate');
+                $query->orderBy('update_dt', 'desc');
+                $query->orderBy('id', 'desc');
+                $query->first();
+            },
+        ));
 
-        $query->where('external_id2', 'like', $external_id2);
-
-        $this->filterRequestTypes($query);
-
-        $order = $query->first();
-
+        $this->applyCriteria();
+        $order = $this->model->first();
         return $order;
     }
 

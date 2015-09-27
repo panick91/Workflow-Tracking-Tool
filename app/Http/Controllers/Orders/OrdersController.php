@@ -76,14 +76,24 @@ class OrdersController extends Controller
 
 
     /**
-     * Display the specified resource.
-     *
-     * @param $external_id2
-     * @return Response
+     * @param $eIsRequestId
+     * @return mixed
      */
-    public function show($external_id2)
+    public function show($eIsRequestId)
     {
-        $order = Orders::getOrder($external_id2);
+        $validator = \Validator::make(
+            [
+                'eIsRequestId' => $eIsRequestId
+            ],
+            [
+                'eIsRequestId' => ['integer']
+            ]
+        );
+        if($validator->fails()){
+            App::abort(400);
+        }
+
+        $order = Orders::getOrder($eIsRequestId);
         if ($order == null)
             App::abort(204);
         return $order;

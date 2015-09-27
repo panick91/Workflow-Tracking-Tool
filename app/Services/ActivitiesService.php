@@ -11,6 +11,7 @@ namespace WTT\Services;
 use Illuminate\Support\Facades\Config;
 use WTT\Repositories\Contracts\ActivityRepositoryInterface;
 use WTT\Repositories\Criteria\ActivityTypeCriteria;
+use WTT\Repositories\Criteria\EIsRequestIdCriteria;
 
 class ActivitiesService
 {
@@ -38,18 +39,16 @@ class ActivitiesService
     public function getActivities($eisRequestId, $page, $pageSize)
     {
         $this->activitiesRepository->pushCriteria(
+            new EIsRequestIdCriteria($eisRequestId, 'eisrequestid')
+        );
+        $this->activitiesRepository->pushCriteria(
             new ActivityTypeCriteria(Config::get('sunrise.activityTypes'))
         );
 
-        $data = $this->activitiesRepository->getActivities($eisRequestId, $page, $pageSize);
-
-//        foreach ($data->activies as $activity) {
-//
-//        }
+        $data = $this->activitiesRepository->getActivities( $page, $pageSize);
 
         return $data;
     }
-
     #endregion
 
     #region Helper methods

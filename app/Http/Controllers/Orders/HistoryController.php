@@ -5,11 +5,9 @@ namespace WTT\Http\Controllers\Orders;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\App;
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
 use Activities;
-use Orders;
 
 class HistoryController extends Controller
 {
@@ -18,16 +16,22 @@ class HistoryController extends Controller
      *
      * @return Response
      */
-    public function index($external_id2)
+    public function index($eIsRequestId)
     {
-        $orderId = Orders::getIdByExternalId2($external_id2);
-
-        if($orderId === -1){
-            App::abort(204);
+        $validator = \Validator::make(
+            [
+                'eIsRequestId' => $eIsRequestId
+            ],
+            [
+                'eIsRequestId' => ['integer']
+            ]
+        );
+        if($validator->fails()){
+            App::abort(400);
         }
 
         $activities = Activities::getActivities(
-            $orderId
+            $eIsRequestId
             , Paginator::resolveCurrentPage()
             , 10);
 

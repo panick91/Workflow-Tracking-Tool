@@ -13,6 +13,7 @@ use stdClass;
 use WTT\Enumerations\WorkflowState;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 use WTT\Repositories\Criteria\CustomerCriteria;
+use WTT\Repositories\Criteria\EIsRequestIdCriteria;
 use WTT\Repositories\Criteria\RequestTypeCriteria;
 use WTT\Repositories\Criteria\ServiceIdCriteria;
 
@@ -34,24 +35,13 @@ class OrdersService
 
     #region Public methods
     /**
-     * @param $external_id2
+     * @param $eIsRequestId
      * @return mixed
      */
-    public function getOrder($external_id2)
+    public function getOrder($eIsRequestId)
     {
-        $order = $this->ordersRepository
-            ->getOrder($external_id2,
-                array(
-                    'taskExecution',
-                    'eisRequestType',
-                    'projects' => function ($query) {
-                        $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
-                        $query->with('network.milestones.milestoneTemplate');
-                        $query->orderBy('update_dt', 'desc');
-                        $query->orderBy('id', 'desc');
-                        $query->first();
-                    },
-                ));
+        $this->ordersRepository->pushCriteria(new EIsRequestIdCriteria($eIsRequestId));
+        $order = $this->ordersRepository->getOrder();
 
         if ($order != null) {
             $this->setCustomProperties($order);
@@ -64,8 +54,7 @@ class OrdersService
      *
      * @param $page
      * @param $pageSize
-     * @return string
-     * @internal param mixed $pokemon
+     * @return
      */
     public function getOrders($page, $pageSize)
     {
@@ -77,6 +66,7 @@ class OrdersService
 
         return $data;
     }
+
 
     /**
      * @param $page
@@ -100,21 +90,6 @@ class OrdersService
 
         return $data;
     }
-
-    /**
-     * Returns internal id of an order entity based on the given external_id2.
-     *
-     * @param $external_id2
-     * @return int
-     */
-    public function getIdByExternalId2($external_id2)
-    {
-        $order = $this->ordersRepository->getOrder($external_id2);
-        if ($order !== null) {
-            return $order->id;
-        } else return -1;
-    }
-
     #endregion
 
     #region Helper methods
@@ -127,7 +102,7 @@ class OrdersService
     private function setCustomProperties($order)
     {
         $order->availableMilestones = new WorkflowState();
-        $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
+        $order->currentWorkflowState = $this->milestoneStatesService->getCurrentWorkflowState($order);
         $order->sadDate = $this->getSADDate($order);
         $order->customer = $this->getCustomerName($order);
 

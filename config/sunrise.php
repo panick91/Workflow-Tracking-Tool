@@ -24,5 +24,5 @@ return [
         , 'SID'
         , 'SBV'
         , 'IIPA'
-    ]
+    ],
 ];

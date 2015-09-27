@@ -19,7 +19,7 @@ class EISRequest extends Eloquent
         , 'tasks'
         , 'eisRequestActivities'
         , 'sadDate'
-        , 'currentMilestone'
+        , 'currentWorkflowState'
         , 'availableMilestones'
         , 'customer'
     ];

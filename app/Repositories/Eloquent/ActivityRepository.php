@@ -13,13 +13,11 @@ use WTT\Repositories\Contracts\ActivityRepositoryInterface;
 
 class ActivityRepository extends Repository implements ActivityRepositoryInterface
 {
-    public function getActivities($eisRequestId, $page, $pageSize)
+    public function getActivities($page, $pageSize)
     {
         $data = new StdClass;
 
         $this->applyCriteria();
-
-        $this->model->where('EISREQUESTID',$eisRequestId);
 
         $this->model->orderBy('time', 'desc');
 
