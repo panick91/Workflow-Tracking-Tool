@@ -5,7 +5,9 @@ namespace WTT\Http\Controllers\Orders;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
+use WTT\Enumerations\WorkflowState;
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
 use Illuminate\Pagination\Paginator;
@@ -43,10 +45,19 @@ class OrdersController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $this->validate($request, [
+            'serviceId' => 'alpha_num|max:10',
+            'customer' => 'alpha_dash|max:255',
+            'siteId' => 'alpha_dash|max:255',
+            'gvNumber' => 'alpha_dash|max:255',
+            'status' => 'in:'.WorkflowState::getCSV()
+        ]);
+
         $ordersData = Orders::getOrdersFiltered(Paginator::resolveCurrentPage()
             , 10
             , $this->serviceId

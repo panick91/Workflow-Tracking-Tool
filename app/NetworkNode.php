@@ -15,6 +15,15 @@ class NetworkNode extends Eloquent {
 
     protected $table = 'MLOGPROD.TBNETWORK_NODE';
 
+    protected $visible = [
+        'id'
+        , 'name'
+        , 'state'
+        , 'milestone_deadline'
+        , 'milestone_completed_dt'
+        , 'milestoneTemplate'
+    ];
+
     public function network()
     {
         return $this->belongsTo('WTT\Network', 'network_id');

@@ -8,14 +8,14 @@
 
 namespace WTT\Services;
 
-use WTT\Enumerations\WorkflowState;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 use WTT\Repositories\Criteria\CustomerCriteria;
 use WTT\Repositories\Criteria\ServiceIdCriteria;
 
 class OrdersService
 {
-    protected $ordersRepository;
+    private $ordersRepository;
+    private $milestoneStatesService;
 
     /**
      * Loads our $ordersRepository with the actual Repo associated with our ordersRepository
@@ -25,15 +25,33 @@ class OrdersService
     public function __construct(OrdersRepositoryInterface $ordersRepository)
     {
         $this->ordersRepository = $ordersRepository;
+        $this->milestoneStatesService = new MilestoneStatesService();
     }
 
+    #region Public methods
+    /**
+     * @param $external_id2
+     * @return mixed
+     */
     public function getOrder($external_id2)
     {
-        $order = $this->ordersRepository->getOrder($external_id2);
+        $order = $this->ordersRepository
+            ->getOrder($external_id2,
+                array(
+                    'taskExecution',
+                    'eisRequestType',
+                    'projects' => function ($query) {
+                        $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
+                        $query->with('network.milestones.milestoneTemplate');
+                        $query->orderBy('update_dt', 'desc');
+                        $query->orderBy('id', 'desc');
+                        $query->first();
+                    },
+                ));
 
         if ($order != null) {
             $order->sadDate = $this->getSADDate($order);
-            $order->currentWorkflowState = $this->currentWorkflowState($order);
+            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
         }
 
         return $order;
@@ -53,12 +71,22 @@ class OrdersService
 
         foreach ($data->orders as $order) {
             $order->sadDate = $this->getSADDate($order);
-            $order->currentWorkflowState = $this->currentWorkflowState($order);
+            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
         }
 
         return $data;
     }
 
+    /**
+     * @param $page
+     * @param $pageSize
+     * @param $serviceId
+     * @param $customerName
+     * @param $siteId
+     * @param $gvNumber
+     * @param $status
+     * @return mixed
+     */
     public function getOrdersFiltered($page, $pageSize, $serviceId, $customerName, $siteId, $gvNumber, $status)
     {
         $this->addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status);
@@ -67,12 +95,16 @@ class OrdersService
 
         foreach ($data->orders as $order) {
             $order->sadDate = $this->getSADDate($order);
-            $order->currentWorkflowState = $this->currentWorkflowState($order);
+            $order->currentMilestone = $this->milestoneStatesService->getCurrentMilestone($order);
+
         }
 
         return $data;
     }
 
+    #endregion
+
+    #region Helper methods
     private function addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status)
     {
         if ($serviceId != null) $this->ordersRepository->pushCriteria(new ServiceIdCriteria($serviceId));
@@ -82,14 +114,10 @@ class OrdersService
     private function getSADDate($model)
     {
         $eisRequestInfos = $model->getAttribute('eisRequestInfos');
-        if ($eisRequestInfos != null) {
+        if ($eisRequestInfos !== null) {
             $ehi_SunCla = $eisRequestInfos[0]->getAttribute('ehi_SunCla');
-            return $ehi_SunCla == null ? null : $ehi_SunCla->getAttribute('deliverydt');
+            return $ehi_SunCla === null ? null : $ehi_SunCla->getAttribute('deliverydt');
         } else return null;
     }
-
-    private function currentWorkflowState($model)
-    {
-        return WorkflowState::PlanningPhase;
-    }
+    #endregion
 }

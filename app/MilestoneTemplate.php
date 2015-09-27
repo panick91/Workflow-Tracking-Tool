@@ -15,6 +15,12 @@ class MilestoneTemplate extends Eloquent {
 
     protected $table = 'MLOGPROD.TBMILESTONETEMPLATE';
 
+    protected $visible = [
+        'name'
+        ,'description'
+        ,'milestonetemplategroup_id'
+    ];
+
     public function networkNodes()
     {
         return $this->hasMany('WTT\NetworkNode', 'milestonetemplate_id  ');

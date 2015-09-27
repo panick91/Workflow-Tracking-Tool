@@ -4,6 +4,7 @@ namespace WTT\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use WTT\Enumerations\WorkflowState;
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
 
@@ -16,6 +17,6 @@ class ProjectStatusController extends Controller
      */
     public function index()
     {
-        return 'ProjectStatus Index';
+        return response()->json(new WorkflowState());
     }
 }

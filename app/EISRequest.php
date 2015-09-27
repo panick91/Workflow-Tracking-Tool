@@ -24,11 +24,11 @@ class EISRequest extends Eloquent
         , 'end_dt'
 //        , 'eisRequestContacts'
         , 'taskExecution'
-        , 'projects'
+//        , 'projects'
         , 'tasks'
         , 'eisRequestActivities'
         , 'sadDate'
-        , 'currentWorkflowState'
+        , 'currentMilestone'
     ];
 
     protected $appends = [

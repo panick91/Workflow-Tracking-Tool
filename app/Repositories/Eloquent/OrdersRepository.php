@@ -22,20 +22,9 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
     , 'IIPA'
     );
 
-    public function getOrder($external_id2)
+    public function getOrder($external_id2, array $relations = array())
     {
-        $query = $this->model->with(array(
-//            'projects' => function ($query) {
-//                $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
-//                $query->with('network.milestones.milestoneTemplate');
-//            },
-            'taskExecution',
-            'eisRequestType',
-            'projects' => function ($query) {
-                $query->where('MLOGPROD.TBPROJECT.state', 'like', 'Activated');
-                $query->with('network.milestones.milestoneTemplate');
-            },
-        ));
+        $query = $this->model->with($relations);
 
         $query->where('external_id2', 'like', $external_id2);
 

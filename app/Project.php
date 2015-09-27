@@ -9,12 +9,19 @@
 namespace WTT;
 
 
+use Carbon\Carbon;
 use yajra\Oci8\Eloquent\OracleEloquent as Eloquent;
 
 class Project extends Eloquent
 {
 
     protected $table = 'MLOGPROD.TBPROJECT';
+
+//        protected $visible = [
+//           'id',
+//            'update_dt'
+//        ];
+    protected $dates = ['update_dt'];
 
     public function tasks()
     {
@@ -34,5 +41,10 @@ class Project extends Eloquent
     public function network()
     {
         return $this->belongsTo('WTT\Network', 'network_id');
+    }
+
+    public function setUpdateDtAttribute($value)
+    {
+        $this->attributes['update_dt'] = Carbon::parse($value);
     }
 }

@@ -11,5 +11,7 @@ namespace WTT\Repositories\Contracts;
 
 interface OrdersRepositoryInterface extends RepositoryInterface
 {
+    public function getOrder($externel_id2, array $relations);
+
     public function getOrders($page, $pageSize);
 }
