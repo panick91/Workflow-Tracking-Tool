@@ -19,7 +19,7 @@ class OrdersServiceServiceProvider extends ServiceProvider
         $this->app->bind('OrdersService', function($app)
         {
             return new OrdersService(
-            // Inject in our class of pokemonInterface, this will be our repository
+            // Inject in our class of OrdersRepositoryInterface, this will be our repository
                 $app->make('Repositories\Contracts\OrdersRepositoryInterface')
             );
         });//

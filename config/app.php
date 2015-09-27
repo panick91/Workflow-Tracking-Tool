@@ -145,6 +145,8 @@ return [
         WTT\Providers\RouteServiceProvider::class,
         WTT\Providers\OrdersRepositoryServiceProvider::class,
         WTT\Providers\OrdersServiceServiceProvider::class,
+        WTT\Providers\ActivityRepositoryServiceProvider::class,
+        WTT\Providers\ActivitiesServiceServiceProvider::class,
 
         /*
          * Database provider
@@ -165,6 +167,7 @@ return [
 
     'aliases' => [
 
+        'Activities'=> WTT\Facades\ActivitiesFacade::class,
         'App'       => Illuminate\Support\Facades\App::class,
         'Artisan'   => Illuminate\Support\Facades\Artisan::class,
         'Auth'      => Illuminate\Support\Facades\Auth::class,

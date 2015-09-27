@@ -8,9 +8,8 @@
 
 namespace WTT\Repositories\Eloquent;
 
-use Illuminate\Database\Eloquent\Builder;
+
 use \StdClass;
-use Illuminate\Support\Facades\DB;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 
 class OrdersRepository extends Repository implements OrdersRepositoryInterface
@@ -37,8 +36,6 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
 
     public function getOrders($page, $pageSize)
     {
-//        DB::enableQueryLog();
-
         $data = new StdClass;
         $this->model = $this->model->with(array(
             'projects' => function ($query) {
@@ -60,8 +57,6 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
 
         $data->orders = $this->model->get();
         $data->count = $this->model->count();
-
-//        print_r(DB::getQueryLog());
 
         return $data;
     }

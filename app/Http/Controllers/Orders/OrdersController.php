@@ -5,7 +5,6 @@ namespace WTT\Http\Controllers\Orders;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use WTT\Enumerations\WorkflowState;
 use WTT\Http\Requests;

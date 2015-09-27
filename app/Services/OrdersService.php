@@ -102,6 +102,14 @@ class OrdersService
         return $data;
     }
 
+    public function getIdByExternalId2($external_id2)
+    {
+        $order = $this->ordersRepository->getOrder($external_id2);
+        if ($order !== null) {
+            return $order->id;
+        } else return -1;
+    }
+
     #endregion
 
     #region Helper methods
