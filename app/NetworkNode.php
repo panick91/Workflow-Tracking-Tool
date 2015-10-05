@@ -22,6 +22,9 @@ class NetworkNode extends Eloquent {
         , 'milestone_deadline'
         , 'milestone_completed_dt'
         , 'milestoneTemplate'
+        , 'network_id'
+        , 'prependingNodes'
+        , 'isCrawled'
     ];
 
     public function network()
@@ -32,5 +35,15 @@ class NetworkNode extends Eloquent {
     public function milestoneTemplate()
     {
         return $this->belongsTo('WTT\MilestoneTemplate', 'milestonetemplate_id');
+    }
+
+    public function incomingLinks()
+    {
+        return $this->hasMany('WTT\NetworkNodeLink', 'end_node_id');
+    }
+
+    public function outgoingLinks()
+    {
+        return $this->hasMany('WTT\NetworkNodeLink', 'start_node_id');
     }
 }

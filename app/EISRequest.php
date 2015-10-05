@@ -22,6 +22,7 @@ class EISRequest extends Eloquent
         , 'currentWorkflowState'
         , 'availableMilestones'
         , 'customer'
+        , 'nodes'
     ];
 
     protected $appends = [

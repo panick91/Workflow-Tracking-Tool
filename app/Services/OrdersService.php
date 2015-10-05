@@ -21,6 +21,7 @@ class OrdersService
 {
     private $ordersRepository;
     private $milestoneStatesService;
+    private $progressCalculationService;
 
     /**
      * Loads our $ordersRepository with the actual Repo associated with our ordersRepository
@@ -31,6 +32,7 @@ class OrdersService
     {
         $this->ordersRepository = $ordersRepository;
         $this->milestoneStatesService = new MilestoneStatesService();
+        $this->progressCalculationService = new ProgressCalculationService();
     }
 
     #region Public methods
@@ -45,6 +47,10 @@ class OrdersService
 
         if ($order != null) {
             $this->setCustomProperties($order);
+//                $order->nodes = $this->progressCalculationService->getProgress(
+//                    $order,
+//                    $order->currentWorkflowState->currentState,
+//                    $order->sadDate);
         }
 
         return $order;

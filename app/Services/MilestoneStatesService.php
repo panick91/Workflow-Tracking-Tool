@@ -23,21 +23,14 @@ class MilestoneStatesService
 
         $configuratedMilestones = Config::get('sunrise.milestones');
 
-        $project = $model->projects->first();
+        $milestones = $this->getCompletedMilestones($model);
 
-        if ($project === null ||
-            $project->network === null ||
-            $project->network->milestones === null ||
-            $project->network->milestones->count() <= 0
-        ) {
+        //check, if milestones are available
+        if (!$milestones) {
             $workflowState->currentState = WorkflowState::NoData;
             return $workflowState;
-        }
 
-        // filter for general milestones
-        $milestones = $project->network->milestones->filter(function ($milestone) {
-            return $milestone->milestoneTemplate->milestonetemplategroup_id == 22;
-        });
+        }
 
         // filter for configurated milestones
         $milestones = $milestones->filter(function ($milestone) use ($configuratedMilestones) {
@@ -58,11 +51,37 @@ class MilestoneStatesService
             return $milestone->milestoneTemplate->name;
         });
 
-        foreach($milestones as $completedMilestone){
+        // map completed milestones to defined enum values
+        foreach ($milestones as $completedMilestone) {
             $workflowState->completedMilestones->add(Config::get('sunrise.milestones')[$completedMilestone->milestoneTemplate->name]);
         }
         $workflowState->currentState = Config::get('sunrise.milestones')[$milestones->last()->milestoneTemplate->name];
 
         return $workflowState;
+    }
+
+
+    /**
+     * Returns all milestones of a given order model, which have the state 'Completed'.
+     *
+     * @param $model
+     * @return bool if there is no milestone available
+     */
+    private function getCompletedMilestones($model)
+    {
+        $project = $model->projects->first();
+
+        if ($project !== null &&
+            $project->network !== null &&
+            $project->network->milestones !== null &&
+            $project->network->milestones->count() > 0
+        ) {
+            return $project->network->milestones->filter(
+                function ($milestone) {
+                    return $milestone->state === 'Completed';
+                });
+        } else {
+            return false;
+        }
     }
 }
