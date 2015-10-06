@@ -13,100 +13,136 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
 use Network;
+use stdClass;
 
 class ProgressCalculationService
 {
-    private $totalCount = 0;
-    private $completedCount = 0;
 
-    private $milestones;
-    private $milestoneTimespans;
-
-    public function getProgress($model, $currentMilestone, $sadDate)
+    /**
+     * @param $model
+     * @param $sadDate
+     * @return array|null
+     * @throws \Exception
+     */
+    public function getMilestoneDeviations($model, $sadDate)
     {
-        if ($sadDate === null) {
-            return null;
-        }
+        if (!$this->validateInputValues($model, $sadDate)) return null;
 
-        $this->milestones = $model->projects[0]->network->milestones;
-        $this->milestoneTimespans = Config::get('sunrise.milestoneTimespans');
+        $deviations = new Collection();
+        $milestones = new Collection();
+        $orderMilestones = $model->projects[0]->network->milestones;
 
-        $differences = new Collection();
+        $milestoneTimespans = Config::get('sunrise.milestoneTimespans');
 
-        foreach ($this->milestoneTimespans as $key => $milestone) {
-            $date = $sadDate->copy();
-            $date->subWeekdays($milestone);
+        $count = 0;
+        $date = new Carbon($sadDate);
 
-            $filtered = $this->milestones->filter(function($value) use ($key){
-                return $value->milestoneTemplate->name === $key;
-            });
+        foreach ($milestoneTimespans as $milestoneName => $days) {
+            // calculate deadline
+            $date->subWeekdays($days);
 
-            if($filtered->count() > 1){
-                throw new \Exception("Duplicate milestone within one network!");
+            // get configured milestone from network
+            $milestone = $this->getMilestone($orderMilestones, $milestoneName);
+
+            $deviationDays = 0;
+            if ($milestone->state === 'Completed') {
+                // get difference between planned completion date and actual completion date
+                $deviationDays = $date->diffInDaysFiltered(function (Carbon $date) {
+                    return !$date->isWeekend();
+                }, new Carbon($milestone->milestone_completed_dt), false);
             }
 
-            $milestone = $filtered->first();
+            $deviations->add($deviationDays);
+            $milestones->add($milestone->milestoneTemplate->name);
 
-            if($milestone->state !== 'Completed'){
-                continue;
-            }
-
-            $diff = $date->diffInDaysFiltered(function(Carbon $date) {
-                return !$date->isWeekend();
-            }, new Carbon($milestone->milestone_completed_dt), false);
-
-            $differences->add($diff);
-
-
-
+            $count++;
         }
 
-
-        return $this->milestones;
+        return $this->createDeviationObject($milestones, $deviations);
     }
 
-//    function isWeekend($date) {
-//        return (date('N', strtotime($date)) >= 6);
+    /**
+     * @param $model
+     * @param $sadDate
+     * @return bool
+     */
+    private function validateInputValues($model, $sadDate)
+    {
+        if ($sadDate === null) return false;
+        if ($model === null) return false;
+        if ($model->projects->first() === null) return false;
+        if ($model->projects->first()->network === null) return false;
+        if ($model->projects->first()->network->milestones === null) return false;
+        if ($model->projects->first()->network->milestones->count() === 0) return false;
+
+        return true;
+    }
+
+    /**
+     * @param $orderMilestones
+     * @param $milestoneName
+     * @return mixed
+     * @throws \Exception
+     */
+    private function getMilestone($orderMilestones, $milestoneName)
+    {
+        $filtered = $orderMilestones->filter(function ($value) use ($milestoneName) {
+            return $value->milestoneTemplate->name === $milestoneName;
+        });
+
+        if ($filtered->count() > 1) {
+            throw new \Exception("Duplicate milestone within one network!");
+        }
+
+        $milestone = $filtered->first();
+        return $milestone;
+    }
+
+    private function createDeviationObject($milestones, $deviations){
+        return [
+            'milestones' => $milestones->reverse()->all()
+            , 'deviations' => $deviations->reverse()->all()
+        ];
+    }
+
+//    private function getPrependdingNodes($node)
+//    {
+//        $node->isCrawled = true;
+////        $this->nodes->add($node);
+//
+//        $this->totalCount++;
+//        if ($node->state === 'Completed' ||
+//            $node->state === 'Disabled'
+//        ) {
+//            $this->completedCount++;
+//        }
+//
+////        $nodes = new Collection();
+//
+//        $node->load('incomingLinks');
+//        $node->prependingNodes = new Collection();
+//
+//        foreach ($node->incomingLinks as $link) {
+//            if ($link->startNode !== null) {
+//                $startNode = null;
+//                $filtered = $this->nodes->filter(function ($value) use ($link) {
+//                    return $value->id === $link->startNode->id;
+//                });
+//
+//                if ($filtered->count() > 0) {
+//                    $startNode = $filtered->first();
+//
+//                    $node->prependingNodes->add($link->startNode);
+//
+//                    if ($startNode->milestone !== 1 &&
+//                        $startNode->isCrawled !== true
+//                    ) {
+//                        $this->getPrependdingNodes($startNode);
+//                    }
+//                }
+//            }
+//
+////        return $nodes;
+//        }
 //    }
-
-    private function getPrependdingNodes($node)
-    {
-        $node->isCrawled = true;
-//        $this->nodes->add($node);
-
-        $this->totalCount++;
-        if ($node->state === 'Completed' ||
-            $node->state === 'Disabled'
-        ) {
-            $this->completedCount++;
-        }
-
-//        $nodes = new Collection();
-
-        $node->load('incomingLinks');
-        $node->prependingNodes = new Collection();
-
-        foreach ($node->incomingLinks as $link) {
-            if ($link->startNode !== null) {
-                $startNode = null;
-                $filtered = $this->nodes->filter(function ($value) use ($link) {
-                    return $value->id === $link->startNode->id;
-                });
-
-                if ($filtered->count() > 0) {
-                    $startNode = $filtered->first();
-
-                    $node->prependingNodes->add($link->startNode);
-
-                    if ($startNode->milestone !== 1 &&
-                        $startNode->isCrawled !== true
-                    ) {
-                        $this->getPrependdingNodes($startNode);
-                    }
-                }
-            }
-
-//        return $nodes;
-        }
-    }
 }

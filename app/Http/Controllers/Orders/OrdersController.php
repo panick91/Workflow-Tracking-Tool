@@ -79,19 +79,9 @@ class OrdersController extends Controller
      * @param $eIsRequestId
      * @return mixed
      */
-    public function show($eIsRequestId)
+    public function show(Request $request, $eIsRequestId)
     {
-        $validator = \Validator::make(
-            [
-                'eIsRequestId' => $eIsRequestId
-            ],
-            [
-                'eIsRequestId' => ['integer']
-            ]
-        );
-        if($validator->fails()){
-            App::abort(400);
-        }
+        $this->validateId($request, $eIsRequestId);
 
         $order = Orders::getOrder($eIsRequestId);
         if ($order == null)

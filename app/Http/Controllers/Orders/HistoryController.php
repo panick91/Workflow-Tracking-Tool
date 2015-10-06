@@ -3,6 +3,7 @@
 namespace WTT\Http\Controllers\Orders;
 
 
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use WTT\Http\Requests;
@@ -16,19 +17,9 @@ class HistoryController extends Controller
      *
      * @return Response
      */
-    public function index($eIsRequestId)
+    public function index(Request $request, $eIsRequestId)
     {
-        $validator = \Validator::make(
-            [
-                'eIsRequestId' => $eIsRequestId
-            ],
-            [
-                'eIsRequestId' => ['integer']
-            ]
-        );
-        if($validator->fails()){
-            App::abort(400);
-        }
+        $this->validateId($request, $eIsRequestId);
 
         $activities = Activities::getActivities(
             $eIsRequestId

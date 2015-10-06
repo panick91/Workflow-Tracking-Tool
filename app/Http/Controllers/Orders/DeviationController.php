@@ -4,10 +4,12 @@ namespace WTT\Http\Controllers\Orders;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\App;
 use WTT\Http\Requests;
 use WTT\Http\Controllers\Controller;
+use Orders;
 
-class ProgressController extends Controller
+class DeviationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,6 +20,9 @@ class ProgressController extends Controller
     {
         $this->validateId($request, $eIsRequestId);
 
-        return 'Progress Index';
+        $data = Orders::getDeviations($eIsRequestId);
+        if ($data === null)
+            App::abort(204);
+        return $data;
     }
 }

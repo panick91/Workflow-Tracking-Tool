@@ -30,6 +30,9 @@ Route::group(array('prefix' => 'api'), function () {
         Route::resource('orders.progress', 'Orders\ProgressController',
             array('only' => array('index')));
 
+        Route::resource('orders.deviations', 'Orders\DeviationController',
+            array('only' => array('index')));
+
         Route::resource('orders.history', 'Orders\HistoryController',
             array('only' => array('index')));
 

@@ -47,13 +47,27 @@ class OrdersService
 
         if ($order != null) {
             $this->setCustomProperties($order);
-//                $order->nodes = $this->progressCalculationService->getProgress(
-//                    $order,
-//                    $order->currentWorkflowState->currentState,
-//                    $order->sadDate);
         }
 
         return $order;
+    }
+
+    public function getDeviations($eIsRequestId)
+    {
+        $this->ordersRepository->pushCriteria(new EIsRequestIdCriteria($eIsRequestId));
+        $order = $this->ordersRepository->getOrder();
+
+        if ($order != null) {
+            $this->setCustomProperties($order);
+            $data = $this->progressCalculationService->getMilestoneDeviations(
+                $order,
+                $this->getSADDate($order));
+
+            return $data;
+        } else {
+            return null;
+        }
+
     }
 
     /**
