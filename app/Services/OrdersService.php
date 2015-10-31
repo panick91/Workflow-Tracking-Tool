@@ -102,7 +102,7 @@ class OrdersService
     {
         $this->addCriterias($serviceId, $customerName, $siteId, $gvNumber, $status);
 
-        $data = $this->ordersRepository->getOrders($page, $pageSize);
+        $data = $this->ordersRepository->getOrders($page == null ? 1 : $page, $pageSize);
 
         foreach ($data->orders as $order) {
             $this->setCustomProperties($order);

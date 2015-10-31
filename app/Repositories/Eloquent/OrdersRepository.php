@@ -9,6 +9,7 @@
 namespace WTT\Repositories\Eloquent;
 
 
+use Illuminate\Support\Facades\DB;
 use \StdClass;
 use WTT\Repositories\Contracts\OrdersRepositoryInterface;
 
@@ -49,13 +50,14 @@ class OrdersRepository extends Repository implements OrdersRepositoryInterface
 
         $this->model->orderBy('create_dt', 'desc');
 
+        // Get total amount of orders
+        $data->count = $this->model->count();
+
         // Pagination
         $this->model->skip($pageSize * ($page - 1));
         $this->model->take($pageSize);
 
-
         $data->orders = $this->model->get();
-        $data->count = $this->model->count();
 
         return $data;
     }
