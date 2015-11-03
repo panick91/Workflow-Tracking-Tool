@@ -38,10 +38,10 @@ class WorkflowState implements JsonSerializable
     function jsonSerialize()
     {
         $states = array();
-        $states[WorkflowState::PlanningPhase] = 'Planning phase';
-        $states[WorkflowState::StartOrder] = 'Start order';
-        $states[WorkflowState::EquipmentInstallation] = 'Equipment installation';
-        $states[WorkflowState::End] = 'End';
+        array_push($states,['key'=>WorkflowState::PlanningPhase,'name'=>'Planning phase', 'longName'=>'Planning phase']);
+        array_push($states,['key'=>WorkflowState::StartOrder,'name'=>'Start order','longName'=>'Start order']);
+        array_push($states,['key'=>WorkflowState::EquipmentInstallation,'name'=>'Equipment inst.','longName'=>'Equipment installation']);
+        array_push($states,['key'=>WorkflowState::End,'name'=>'End','longName'=>'End']);
 
         return $states;
     }
