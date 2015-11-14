@@ -14,4 +14,5 @@ interface OrdersRepositoryInterface extends RepositoryInterface
     public function getOrder();
 
     public function getOrders($page, $pageSize);
+    public function getOrdersByStatus($page, $pageSize, $status);
 }

@@ -51,7 +51,7 @@ class OrdersController extends Controller
     {
         $this->validate($request, [
             'serviceId' => 'alpha_num|max:10',
-            'customer' => 'alpha_dash|max:255',
+            'customer' => 'string|max:255',
             'siteId' => 'alpha_dash|max:255',
             'gvNumber' => 'alpha_dash|max:255',
             'status' => 'in:'.WorkflowState::getCSV()

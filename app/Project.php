@@ -17,10 +17,6 @@ class Project extends Eloquent
 
     protected $table = 'MLOGPROD.TBPROJECT';
 
-//        protected $visible = [
-//           'id',
-//            'update_dt'
-//        ];
     protected $dates = ['update_dt'];
 
     public function tasks()

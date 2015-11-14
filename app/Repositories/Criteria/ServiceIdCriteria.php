@@ -28,7 +28,7 @@ class ServiceIdCriteria extends Criteria
      */
     public function apply($model, Repository $repository)
     {
-        $query = $model->where('LOWER(external_id2)','like','%'.strtolower($this->serviceId).'%');
+        $query = $model->where('LOWER(MLOGPROD.TBEISREQUEST.external_id2)','like','%'.strtolower($this->serviceId).'%');
 
         return $query;
     }

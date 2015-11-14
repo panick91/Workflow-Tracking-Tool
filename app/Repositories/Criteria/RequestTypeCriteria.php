@@ -31,8 +31,8 @@ class RequestTypeCriteria extends Criteria
         $query = $model->where(function ($query) {
             $i = 0;
             foreach ($this->requestTypes as $requestType) {
-                if ($i == 0) $query->where('external_id2', 'like', $requestType . '%');
-                else $query->orWhere('external_id2', 'like', $requestType . '%');
+                if ($i == 0) $query->where('MLOGPROD.TBEISREQUEST.external_id2', 'like', $requestType . '%');
+                else $query->orWhere('MLOGPROD.TBEISREQUEST.external_id2', 'like', $requestType . '%');
                 $i++;
             }
         });
